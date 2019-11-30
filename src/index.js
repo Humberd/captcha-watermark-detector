@@ -1,3 +1,18 @@
+function getCaptchaResultForTextSrc(src) {
+  return new Promise((resolve, reject) => {
+    const tempImgElem = document.createElement('img');
+    tempImgElem.src = src;
+    tempImgElem.onload = () => {
+      const baseCanvas = document.createElement('canvas');
+      baseCanvas.width = 398;
+      baseCanvas.height = 200;
+      baseCanvas.getContext('2d').drawImage(tempImgElem, 0, 0);
+
+      resolve(getCaptchaResult(baseCanvas))
+    }
+  })
+}
+
 function getCaptchaResult(canvasElem) {
   const canvasWidth = canvasElem.width;
   const canvasHeight = canvasElem.height;
@@ -7,7 +22,14 @@ function getCaptchaResult(canvasElem) {
   const lastLayerPixels = filteredLayers[filteredLayers.length - 1].pixels;
   const startXPosition = detectWatermarkXStartPosition(lastLayerPixels);
   console.log(startXPosition);
+
+  return {
+    startXPosition,
+    layers: filteredLayers
+  };
 }
+
+new MouseEvent('mousedown');
 
 function filterImage(pixels) {
   const layers = [];

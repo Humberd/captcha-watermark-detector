@@ -58,25 +58,13 @@
   const IMG_WIDTH = 398;
   const IMG_HEIGHT = 200;
 
-  function updatePreview(src) {
-    const tempImgElem = document.createElement('img');
-    tempImgElem.src = src;
-    tempImgElem.onload = () => afterImageLoaded(tempImgElem);
-  }
-
-  function afterImageLoaded(imgElem) {
+  async function loadNewPreview(imgSrc) {
     clearPreview();
-    const baseCanvas = document.createElement('canvas');
-    baseCanvas.width = IMG_WIDTH;
-    baseCanvas.height = IMG_HEIGHT;
-    const ctx = baseCanvas.getContext('2d');
-    ctx.drawImage(imgElem, 0, 0);
+    const captchaResult = await getCaptchaResultForTextSrc(imgSrc);
+    console.log(captchaResult);
+    captchaResult.layers.forEach(layer => addPreviewLayer(layer));
 
-    const baseImgPixels = ctx.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
-    const layers = filterImage(baseImgPixels);
-    layers.forEach(layer => addPreviewLayer(layer));
-
-    const lastLayerPixels = layers[layers.length - 1].pixels;
+    const lastLayerPixels = captchaResult.layers[captchaResult.layers.length - 1].pixels;
     drawLastLayer(lastLayerPixels);
   }
 
@@ -153,7 +141,7 @@
       allButtons.forEach(it => it.classList.remove('selected'));
       buttonElem.classList.add('selected');
 
-      updatePreview(buttonElem.textContent);
+      loadNewPreview(buttonElem.textContent);
 
       localStorage.setItem('erep-captcha-solver-current-button', image);
     };
