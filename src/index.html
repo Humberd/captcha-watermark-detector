@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+  >
+  <meta
+    http-equiv="X-UA-Compatible"
+    content="ie=edge"
+  >
+  <script src="LenaJS.js"></script>
+  <script src="index.js"></script>
+  <style>
+    body {
+      font-family: "Arial Black";
+
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    .layer {
+      margin-right: 10px;
+    }
+
+    .layer .name {
+      margin-bottom: 2px;
+    }
+  </style>
+
+  <title>Document</title>
+</head>
+<body>
+<img
+  style="display: none;"
+  id="raw-image"
+  src="cbimage.jpg"
+>
+
+<section class="layer">
+  <h3 class="name">0. Raw</h3>
+  <canvas
+    id="canvas"
+  ></canvas>
+</section>
+
+
+<script>
+  const IMG_WIDTH = 398;
+  const IMG_HEIGHT = 200;
+  const rawImage = document.getElementById('raw-image');
+
+  const canvas = document.getElementById('canvas');
+  canvas.width = IMG_WIDTH;
+  canvas.height = IMG_HEIGHT;
+
+  setTimeout(() => {
+    const context = canvas.getContext('2d');
+    context.drawImage(rawImage, 0, 0);
+    const layers = filterImage(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT));
+    layers.forEach(layer => addPreview(layer));
+
+    const lastLayerPixels = layers[layers.length - 1].pixels;
+    const watermarkXStartIndex = detectWatermarkXStartPosition(lastLayerPixels);
+
+    const newCanvas = addPreview({
+      name: 'Final: Detected',
+      pixels: lastLayerPixels,
+    });
+    const ctx = newCanvas.getContext('2d');
+    ctx.beginPath();
+    ctx.strokeStyle = '#00ff00';
+    ctx.moveTo(watermarkXStartIndex, 0);
+    ctx.lineTo(watermarkXStartIndex, IMG_HEIGHT);
+    ctx.stroke();
+  });
+
+  function addPreview(layer) {
+    const newCanvas = document.createElement('canvas');
+    newCanvas.width = IMG_WIDTH;
+    newCanvas.height = IMG_HEIGHT;
+    newCanvas.getContext('2d').putImageData(layer.pixels, 0, 0);
+
+    const layerNameElem = document.createElement('h3');
+    layerNameElem.classList.add('name');
+    layerNameElem.textContent = layer.name;
+
+    const newLayerElem = document.createElement('section');
+    newLayerElem.classList.add('layer');
+    newLayerElem.append(layerNameElem, newCanvas);
+
+    document.body.append(newLayerElem);
+
+    return newCanvas;
+  }
+</script>
+
+</body>
+</html>
