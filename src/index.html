@@ -77,7 +77,7 @@
     layers.forEach(layer => addPreviewLayer(layer));
 
     const lastLayerPixels = layers[layers.length - 1].pixels;
-    drawLastLayer(lastLayerPixels)
+    drawLastLayer(lastLayerPixels);
   }
 
   function drawLastLayer(pixels) {
@@ -133,13 +133,18 @@
       buttonElem.classList.add('selected');
 
       updatePreview(buttonElem.textContent);
+
+      localStorage.setItem('erep-captcha-solver-current-button', image);
     };
     buttonElem.textContent = image;
 
     return buttonElem;
   });
 
-  allButtons[0].click();
+  const previouslySelected = localStorage.getItem('erep-captcha-solver-current-button');
+
+  const previousImageIndex = images.indexOf(previouslySelected);
+  allButtons[previousImageIndex >= 0 ? previousImageIndex : 0].click();
   buttonsElem.append(...allButtons);
 
 </script>
