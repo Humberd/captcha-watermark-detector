@@ -29,8 +29,6 @@ function getCaptchaResult(canvasElem) {
   };
 }
 
-new MouseEvent('mousedown');
-
 function filterImage(pixels) {
   const layers = [];
   let lastPixels = pixels;
