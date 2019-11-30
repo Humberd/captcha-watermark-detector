@@ -1,3 +1,151 @@
+async function getAndResolveCaptcha() {
+  const {challengeId, imageId, src} = await sessionCaptcha.sliderCaptcha.getChallenge();
+
+  const result = await getCaptchaResultForTextSrc(src);
+  result.startXPosition;
+
+  const trails = {
+    x: Array(result.startXPosition).fill().map((value, index) => index),
+    y: [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      1,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      3,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      4,
+      5,
+      5,
+      5,
+      5,
+      6,
+      6,
+      6,
+      6,
+      6,
+      7,
+      7,
+      7,
+      7,
+      7,
+      8,
+      8,
+      8,
+      8,
+      9,
+      9,
+      9,
+      9,
+      9,
+      10,
+      10,
+      10,
+      10,
+      11,
+      11,
+      11,
+      11,
+      11,
+      11,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      12,
+      13,
+      13,
+      13,
+      13,
+      13,
+      13,
+      13,
+      13,
+      13,
+      13,
+      13,
+      13,
+      13],
+  };
+
+  return await sessionCaptcha.sliderCaptcha.verify(trails, src, imageId, challengeId);
+}
+
 function getCaptchaResultForTextSrc(src) {
   return new Promise((resolve, reject) => {
     const tempImgElem = document.createElement('img');
@@ -8,9 +156,9 @@ function getCaptchaResultForTextSrc(src) {
       baseCanvas.height = 200;
       baseCanvas.getContext('2d').drawImage(tempImgElem, 0, 0);
 
-      resolve(getCaptchaResult(baseCanvas))
-    }
-  })
+      resolve(getCaptchaResult(baseCanvas));
+    };
+  });
 }
 
 function getCaptchaResult(canvasElem) {
@@ -25,7 +173,7 @@ function getCaptchaResult(canvasElem) {
 
   return {
     startXPosition,
-    layers: filteredLayers
+    layers: filteredLayers,
   };
 }
 
