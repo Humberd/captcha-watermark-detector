@@ -61,7 +61,7 @@
   function updatePreview(src) {
     const tempImgElem = document.createElement('img');
     tempImgElem.src = src;
-    tempImgElem.onload = ev => afterImageLoaded(tempImgElem);
+    tempImgElem.onload = () => afterImageLoaded(tempImgElem);
   }
 
   function afterImageLoaded(imgElem) {
@@ -83,7 +83,7 @@
   function drawLastLayer(pixels) {
     const watermarkXStartIndex = detectWatermarkXStartPosition(pixels);
     const newCanvas = addPreviewLayer({
-      name: 'Final: Detected',
+      name: `Final: Detected x:${watermarkXStartIndex}`,
       pixels: pixels,
     });
     const newCanvasCtx = newCanvas.getContext('2d');
