@@ -32,10 +32,6 @@
       margin-bottom: 2px;
     }
 
-    button {
-
-    }
-
     button.selected {
       background-color: lightblue;
     }
@@ -44,11 +40,6 @@
   <title>Document</title>
 </head>
 <body>
-<img
-  style="display: none;"
-  id="raw-image"
-  src="cbimage.jpg"
->
 
 <section id="buttons">
 
@@ -63,62 +54,47 @@
   </section>
 </article>
 
-
-<script>
-  const images = [
-    'captcha2.png',
-    'cbimage.jpg',
-  ];
-
-  const buttonsElem = document.getElementById('buttons');
-
-  const allButtons = images.map(image => {
-    const buttonElem = document.createElement('button');
-    buttonElem.onclick = ev => {
-      allButtons.forEach(it => it.classList.remove('selected'));
-      buttonElem.classList.add('selected');
-    };
-    buttonElem.textContent = image;
-
-    return buttonElem;
-  });
-
-  buttonsElem.append(...allButtons);
-
-</script>
-
-
 <script>
   const IMG_WIDTH = 398;
   const IMG_HEIGHT = 200;
-  const rawImage = document.getElementById('raw-image');
 
-  const canvas = document.getElementById('canvas');
-  canvas.width = IMG_WIDTH;
-  canvas.height = IMG_HEIGHT;
+  function updatePreview(src) {
+    const tempImgElem = document.createElement('img');
+    tempImgElem.src = src;
+    tempImgElem.onload = ev => afterImageLoaded(tempImgElem);
+  }
 
-  setTimeout(() => {
-    const context = canvas.getContext('2d');
-    context.drawImage(rawImage, 0, 0);
-    const layers = filterImage(context.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT));
-    layers.forEach(layer => addPreview(layer));
+  function afterImageLoaded(imgElem) {
+    clearPreview();
+    const baseCanvas = document.createElement('canvas');
+    baseCanvas.width = IMG_WIDTH;
+    baseCanvas.height = IMG_HEIGHT;
+    const ctx = baseCanvas.getContext('2d');
+    ctx.drawImage(imgElem, 0, 0);
+
+    const baseImgPixels = ctx.getImageData(0, 0, IMG_WIDTH, IMG_HEIGHT);
+    const layers = filterImage(baseImgPixels);
+    layers.forEach(layer => addPreviewLayer(layer));
 
     const lastLayerPixels = layers[layers.length - 1].pixels;
-    const watermarkXStartIndex = detectWatermarkXStartPosition(lastLayerPixels);
+    drawLastLayer(lastLayerPixels)
+  }
 
-    const newCanvas = addPreview({
+  function drawLastLayer(pixels) {
+    const watermarkXStartIndex = detectWatermarkXStartPosition(pixels);
+    const newCanvas = addPreviewLayer({
       name: 'Final: Detected',
-      pixels: lastLayerPixels,
+      pixels: pixels,
     });
-    const ctx = newCanvas.getContext('2d');
-    ctx.beginPath();
-    ctx.strokeStyle = '#00ff00';
-    ctx.moveTo(watermarkXStartIndex, 0);
-    ctx.lineTo(watermarkXStartIndex, IMG_HEIGHT);
-    ctx.stroke();
-  });
+    const newCanvasCtx = newCanvas.getContext('2d');
+    newCanvasCtx.beginPath();
+    newCanvasCtx.strokeStyle = '#00ff00';
+    newCanvasCtx.moveTo(watermarkXStartIndex, 0);
+    newCanvasCtx.lineTo(watermarkXStartIndex, IMG_HEIGHT);
+    newCanvasCtx.stroke();
+  }
 
-  function addPreview(layer) {
+  function addPreviewLayer(layer) {
     const newCanvas = document.createElement('canvas');
     newCanvas.width = IMG_WIDTH;
     newCanvas.height = IMG_HEIGHT;
@@ -136,6 +112,36 @@
 
     return newCanvas;
   }
+
+  function clearPreview() {
+    document.getElementById('preview').innerHTML = '';
+  }
+</script>
+
+<script>
+  const images = [
+    'captcha2.png',
+    'cbimage.jpg',
+  ];
+
+  const buttonsElem = document.getElementById('buttons');
+
+  const allButtons = images.map(image => {
+    const buttonElem = document.createElement('button');
+    buttonElem.onclick = ev => {
+      allButtons.forEach(it => it.classList.remove('selected'));
+      buttonElem.classList.add('selected');
+
+      updatePreview(buttonElem.textContent);
+    };
+    buttonElem.textContent = image;
+
+    return buttonElem;
+  });
+
+  allButtons[0].click();
+  buttonsElem.append(...allButtons);
+
 </script>
 
 </body>

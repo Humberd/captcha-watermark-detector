@@ -1,4 +1,4 @@
-function handleCaptcha(canvasElem) {
+function getCaptchaResult(canvasElem) {
   const canvasWidth = canvasElem.width;
   const canvasHeight = canvasElem.height;
 
@@ -11,7 +11,13 @@ function handleCaptcha(canvasElem) {
 
 function filterImage(pixels) {
   const layers = [];
-  let lastPixels = LenaJS.highpass(pixels);
+  let lastPixels = pixels;
+  layers.push({
+    name: '0. Base',
+    pixels: lastPixels,
+  });
+
+  lastPixels = LenaJS.highpass(pixels);
   layers.push({
     name: '1. HighPass',
     pixels: lastPixels,
