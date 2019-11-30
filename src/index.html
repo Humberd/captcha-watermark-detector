@@ -10,12 +10,15 @@
     http-equiv="X-UA-Compatible"
     content="ie=edge"
   >
-  <script src="LenaJS.js"></script>
+  <link
+    rel="stylesheet"
+    href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+    crossorigin="anonymous"
+  >
   <script src="index.js"></script>
   <style>
-    body {
-      font-family: "Arial Black";
-
+    #preview {
       display: flex;
       flex-wrap: wrap;
     }
@@ -25,7 +28,16 @@
     }
 
     .layer .name {
+      margin-top: 10px;
       margin-bottom: 2px;
+    }
+
+    button {
+
+    }
+
+    button.selected {
+      background-color: lightblue;
     }
   </style>
 
@@ -38,12 +50,42 @@
   src="cbimage.jpg"
 >
 
-<section class="layer">
-  <h3 class="name">0. Raw</h3>
-  <canvas
-    id="canvas"
-  ></canvas>
+<section id="buttons">
+
 </section>
+
+<article id="preview">
+  <section class="layer">
+    <h3 class="name">0. Raw</h3>
+    <canvas
+      id="canvas"
+    ></canvas>
+  </section>
+</article>
+
+
+<script>
+  const images = [
+    'captcha2.png',
+    'cbimage.jpg',
+  ];
+
+  const buttonsElem = document.getElementById('buttons');
+
+  const allButtons = images.map(image => {
+    const buttonElem = document.createElement('button');
+    buttonElem.onclick = ev => {
+      allButtons.forEach(it => it.classList.remove('selected'));
+      buttonElem.classList.add('selected');
+    };
+    buttonElem.textContent = image;
+
+    return buttonElem;
+  });
+
+  buttonsElem.append(...allButtons);
+
+</script>
 
 
 <script>
@@ -90,7 +132,7 @@
     newLayerElem.classList.add('layer');
     newLayerElem.append(layerNameElem, newCanvas);
 
-    document.body.append(newLayerElem);
+    document.getElementById('preview').append(newLayerElem);
 
     return newCanvas;
   }
